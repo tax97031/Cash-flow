@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="資金繰り">
+<meta name="theme-color" content="#5b6cf0">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>資金繰り</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9eefb; --card:#ffffff; --ink:#262a40; --sub:#979db5; --line:#eceef6;
+    --indigo:#5b6cf0; --indigo-d:#4453d6; --indigo-soft:#eef0fe;
+    --sky:#19b7e8; --sky-d:#0e93bf; --sky-soft:#e3f6fd;
+    --inc:#12a594; --exp:#f0506e; --sat:#3b82f6; --sun:#ef4d6a;
+    --cols: 72px 1fr 1fr 1fr;
+    --rpad:14px;
+    --tab-h:60px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;
+    background:linear-gradient(165deg,#d8f2ff 0%,#e4f0ff 48%,#daf6ff 100%);color:var(--ink);overflow:hidden}
+  body::before{content:"";position:fixed;top:-150px;right:-120px;width:440px;height:440px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,#a6e2ff,#c7e0ff 58%,transparent 72%);opacity:.75;z-index:0}
+  body::after{content:"";position:fixed;bottom:-150px;left:-140px;width:410px;height:410px;border-radius:50%;
+    background:radial-gradient(circle at 60% 40%,#aef0fb,#cfe8ff 58%,transparent 72%);opacity:.7;z-index:0}
+
+  #app{position:relative;z-index:1;display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;padding-top:env(safe-area-inset-top)}
+
+  /* floating sheet that holds fixed head + scroll body + fixed foot */
+  .sheet-wrap{flex:1;min-height:0;display:flex;flex-direction:column;margin:12px 0;
+    background:var(--card);border-radius:24px;overflow:hidden;box-shadow:0 12px 34px rgba(40,46,90,.12)}
+
+  .head{flex:none;padding:12px 0 0}
+  .scope{display:block;margin:0 14px;width:calc(100% - 28px);border:none;background:var(--indigo-soft);color:var(--indigo-d);font-family:inherit;
+    font-size:15px;font-weight:600;padding:11px 14px;border-radius:13px;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234453d6' stroke-width='1.8' fill='none'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 16px center}
+  .monthnav{display:flex;align-items:center;justify-content:center;gap:18px;padding:12px 0 4px}
+  .monthnav button{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:none;
+    background:var(--sky-soft);color:var(--sky-d);border-radius:12px;font-size:15px;cursor:pointer}
+  .monthnav button:active{transform:scale(.92)}
+  .monthnav .m{font-size:18px;font-weight:700;min-width:130px;text-align:center;letter-spacing:.3px}
+  .balrow{display:flex;align-items:baseline;justify-content:space-between;padding:9px var(--rpad)}
+  .balrow.open{margin-top:14px}
+  .bl-label{font-size:13px;font-weight:600;color:var(--sub)}
+  .bl-val{font-size:19px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:.2px}
+  .bl-val small{font-size:12px;font-weight:600;color:var(--sub);margin-left:2px}
+  .hrow{display:grid;grid-template-columns:var(--cols);padding:7px var(--rpad);border-bottom:1px solid var(--line)}
+  .hrow>div{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.3px;text-align:right}
+  .hrow>div:first-child{text-align:left}
+
+  .body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .drow{display:grid;grid-template-columns:var(--cols);align-items:center;padding:0 var(--rpad);min-height:46px;
+    border-bottom:1px solid var(--line);cursor:pointer}
+  .drow:active{background:#f6f7ff}
+  .drow.today{background:var(--sky-soft);box-shadow:inset 3px 0 0 var(--sky)}
+  .c-date{font-size:13.5px;font-weight:600}
+  .c-num{text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+  .c-num.bal{font-weight:700}
+  .c-num.z{color:#c9ccdb;font-weight:500}
+  .inc{color:var(--inc)} .exp{color:var(--exp)}
+  .sat{color:var(--sat)} .sun{color:var(--sun)}
+  .detail{background:#f6f8ff;border-bottom:1px solid var(--line);padding:6px 12px 12px}
+  .ditem{display:flex;align-items:center;justify-content:space-between;background:var(--card);
+    border-radius:12px;padding:10px 14px;margin-top:8px;box-shadow:0 1px 4px rgba(40,46,90,.05)}
+  .ditem .name{font-size:14px;font-weight:600}
+  .ditem .meta{font-size:11.5px;color:var(--sub);margin-top:2px}
+  .ditem .recflag{display:inline-block;font-size:10px;font-weight:700;color:var(--indigo-d);
+    background:var(--indigo-soft);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+  .ditem .amt{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .ditem .edit{margin-left:10px;background:none;border:none;color:var(--indigo);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .dayadd{width:100%;margin-top:8px;padding:11px;border:1.5px dashed #bcd6ec;border-radius:12px;background:none;
+    color:var(--sky-d);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+  .dayadd:active{background:var(--sky-soft)}
+
+  .foot{flex:none;display:flex;align-items:baseline;justify-content:space-between;padding:13px var(--rpad);
+    background:var(--card);border-top:1px solid var(--line)}
+  .foot .bl-val{font-size:19px}
+
+  .tabbar{flex:none;display:flex;background:var(--card);border-top:1px solid var(--line);
+    height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
+  .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    background:none;border:none;color:var(--sub);font-family:inherit;font-size:10.5px;font-weight:700;cursor:pointer}
+  .tabbar button svg{width:21px;height:21px;display:block}
+  .tabbar button:active{opacity:.5}
+  .tabbar button.accent{color:var(--indigo-d)}
+
+  .empty{padding:50px 30px;text-align:center;color:var(--sub);font-size:14px;line-height:1.8}
+  .empty b{display:block;color:var(--ink);font-size:17px;font-weight:700;margin-bottom:8px}
+
+  .overlay{position:fixed;left:0;right:0;top:0;height:100%;background:rgba(28,30,58,.42);backdrop-filter:blur(2px);
+    z-index:50;display:none;align-items:center;justify-content:center;padding:14px}
+  .overlay.show{display:flex}
+  .modal{background:var(--bg);width:100%;max-width:430px;max-height:100%;overflow-y:auto;border-radius:24px;
+    box-shadow:0 26px 70px rgba(20,22,55,.34);-webkit-overflow-scrolling:touch}
+  .mhdr{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 18px 12px;background:var(--bg);z-index:2}
+  .mhdr strong{font-size:16px;font-weight:700}
+  .mhdr button{background:none;border:none;font-family:inherit;font-size:15px;color:var(--indigo);cursor:pointer;padding:4px 2px}
+  .mhdr .save{font-weight:800;color:var(--indigo-d)}
+  .mhdr .spacer{width:54px}
+  .seg{display:flex;margin:4px 18px 0;background:#e1e5f3;border-radius:13px;padding:3px}
+  .seg button{flex:1;border:none;background:none;font-family:inherit;padding:9px;border-radius:10px;
+    font-size:14px;font-weight:700;color:var(--sub);cursor:pointer}
+  .seg button.on{background:var(--card);box-shadow:0 2px 6px rgba(40,46,90,.12)}
+  .seg button.on.inc{color:var(--inc)} .seg button.on.exp{color:var(--exp)}
+  .grp{margin:16px 0 0}
+  .grp .cap{font-size:11.5px;font-weight:700;color:var(--sub);letter-spacing:.4px;padding:0 22px 7px}
+  .card{background:var(--card);margin:0 14px;border-radius:16px;padding:2px 16px;box-shadow:0 2px 8px rgba(40,46,90,.05)}
+  .card.pad{padding:14px 16px}
+  .frow{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line)}
+  .frow:last-child{border-bottom:none}
+  .frow label{font-size:14.5px;font-weight:600}
+  .frow input,.frow select{border:none;background:none;font-family:inherit;font-size:14.5px;text-align:right;color:var(--ink);max-width:62%}
+  .frow input[type=file]{font-size:12px}
+  .frow input::placeholder{color:#c4c8db}
+  .frow .suffix{font-size:14px;color:var(--sub);display:flex;align-items:center;gap:6px}
+  .frow .suffix input{width:52px;text-align:center}
+  .ta{width:100%;min-height:150px;border:none;background:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:12px;line-height:1.5;resize:vertical;color:var(--ink);outline:none}
+  .hint{font-size:11.5px;color:var(--sub);line-height:1.6;padding:10px 22px 0}
+  .btn-primary{display:block;width:calc(100% - 28px);margin:16px 14px 0;padding:14px;border:none;border-radius:14px;
+    background:var(--indigo);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(91,108,240,.35)}
+  .btn-primary.sky{background:var(--sky);box-shadow:0 8px 18px rgba(25,183,232,.32)}
+  .btn-primary:active{filter:brightness(.93)}
+  .btn-danger{display:block;width:calc(100% - 28px);margin:14px 14px 20px;padding:13px;border:none;border-radius:14px;
+    background:var(--card);color:var(--exp);font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer}
+  .listrow{display:flex;justify-content:space-between;align-items:center;background:var(--card);
+    margin:0 14px 8px;border-radius:14px;padding:13px 16px;box-shadow:0 2px 8px rgba(40,46,90,.05)}
+  .listrow .name{font-size:14.5px;font-weight:600}
+  .listrow .sub{font-size:11.5px;color:var(--sub);margin-top:2px}
+  .listrow .lnk{background:none;border:none;color:var(--indigo);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .listrow .del{background:none;border:none;color:var(--exp);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-left:8px}
+
+  .toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + 28px);transform:translateX(-50%);
+    background:rgba(28,30,58,.92);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:22px;
+    z-index:99;opacity:0;transition:opacity .25s;pointer-events:none;max-width:80%}
+  .toast.show{opacity:1}
+
+  #confirm{z-index:60}
+  .cmodal{max-width:300px;padding:22px 20px 16px;text-align:center;border-radius:20px;background:var(--card)}
+  .cmsg{font-size:14.5px;line-height:1.65;color:var(--ink);margin-bottom:18px}
+  .cbtns{display:flex;gap:10px}
+  .cbtns button{flex:1;padding:12px;border:none;border-radius:12px;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer}
+  .cno{background:#e6e9f5;color:var(--ink)}
+  .cyes{background:var(--exp);color:#fff}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="overlay" id="overlay"></div>
+<div class="overlay" id="confirm"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const WD=['日','月','火','水','木','金','土'];
+const KEY='cashflow_v1';
+const state={accounts:[],transactions:[],scope:'all',y:0,m:0,expand:null};
+
+/* ---------- storage (hosted: localStorage / Claude preview: window.storage) ---------- */
+const store=(function(){
+  if(typeof window!=='undefined'&&window.storage&&window.storage.get){
+    return {get:async k=>{try{const r=await window.storage.get(k);return r&&r.value?r.value:null;}catch(e){return null;}},
+            set:async (k,v)=>{try{await window.storage.set(k,v);return true;}catch(e){return false;}}};
+  }
+  return {get:async k=>{try{return localStorage.getItem(k);}catch(e){return null;}},
+          set:async (k,v)=>{try{localStorage.setItem(k,v);return true;}catch(e){return false;}}};
+})();
+async function load(){try{const v=await store.get(KEY);
+  if(v){const d=JSON.parse(v);state.accounts=d.accounts||[];state.transactions=d.transactions||[];}}catch(e){}}
+async function save(){const ok=await store.set(KEY,JSON.stringify({accounts:state.accounts,transactions:state.transactions}));if(!ok)toast('保存に失敗しました');}
+/* offline support */
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});}
+
+/* ---------- date utils ---------- */
+const pad=n=>String(n).padStart(2,'0');
+const toStr=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const dim=(y,m)=>new Date(y,m+1,0).getDate();
+const isWE=d=>{const w=d.getDay();return w===0||w===6;};
+const yen=n=>n.toLocaleString('ja-JP');
+
+/* ---------- 日本の祝日 ---------- */
+const _hol={};
+function holidaysOfYear(y){
+  if(_hol[y])return _hol[y];
+  const H={},add=(m,d,n)=>{if(d)H[`${y}-${pad(m)}-${pad(d)}`]=n;};
+  const nthMon=(m,n)=>{let c=0;for(let d=1;d<=31;d++){const dt=new Date(y,m-1,d);if(dt.getMonth()!==m-1)break;if(dt.getDay()===1&&++c===n)return d;}};
+  add(1,1,'元日');
+  add(1,nthMon(1,2),'成人の日');
+  add(2,11,'建国記念の日');
+  if(y>=2020)add(2,23,'天皇誕生日');
+  add(3,Math.floor(20.8431+0.242194*(y-1980)-Math.floor((y-1980)/4)),'春分の日');
+  add(4,29,'昭和の日');
+  add(5,3,'憲法記念日');
+  add(5,4,'みどりの日');
+  add(5,5,'こどもの日');
+  add(7,nthMon(7,3),'海の日');
+  if(y>=2016)add(8,11,'山の日');
+  add(9,nthMon(9,3),'敬老の日');
+  add(9,Math.floor(23.2488+0.242194*(y-1980)-Math.floor((y-1980)/4)),'秋分の日');
+  add(10,nthMon(10,2),y>=2020?'スポーツの日':'体育の日');
+  add(11,3,'文化の日');
+  add(11,23,'勤労感謝の日');
+  // 振替休日：日曜が祝日なら翌平日へ
+  for(const k of Object.keys(H)){const dt=parse(k);if(dt.getDay()===0){let n=new Date(dt);do{n.setDate(n.getDate()+1);}while(H[toStr(n)]);H[toStr(n)]='振替休日';}}
+  _hol[y]=H;return H;
+}
+function holidayName(d){return holidaysOfYear(d.getFullYear())[toStr(d)]||null;}
+function isBiz(d){return !isWE(d)&&!holidayName(d);}
+function adjust(d,rule){const x=new Date(d);
+  if(rule==='before'){while(!isBiz(x))x.setDate(x.getDate()-1);}
+  else if(rule==='after'){while(!isBiz(x))x.setDate(x.getDate()+1);}
+  return x;}
+
+/* ---------- occurrences ---------- */
+function genDates(t,end){
+  const start=parse(t.startDate);const out=[];if(start>end)return out;
+  const r=t.recurrence;
+  if(!r||r.freq==='none'){out.push(new Date(start));return out;}
+  for(let k=0;k<20000;k++){let d;
+    if(r.freq==='daily'){d=new Date(start);d.setDate(d.getDate()+r.interval*k);}
+    else if(r.freq==='monthly'){const mi=start.getMonth()+r.interval*k;const y=start.getFullYear()+Math.floor(mi/12);const m=((mi%12)+12)%12;d=new Date(y,m,Math.min(start.getDate(),dim(y,m)));}
+    else{const y=start.getFullYear()+r.interval*k;const m=start.getMonth();d=new Date(y,m,Math.min(start.getDate(),dim(y,m)));}
+    if(d>end)break;out.push(d);}
+  return out;}
+function occurrencesUpTo(end){
+  const inScope=state.transactions.filter(t=>state.scope==='all'||t.accountId===state.scope);
+  const list=[];
+  for(const t of inScope){const rule=t.recurrence?(t.recurrence.weekend||'none'):'none';
+    for(const raw of genDates(t,end)){const d=adjust(raw,rule);
+      list.push({date:toStr(d),type:t.type,amount:t.amount,accountId:t.accountId,memo:t.memo||'',recurring:!!(t.recurrence&&t.recurrence.freq!=='none'),tid:t.id});}}
+  return list;}
+function openingBalance(){let b=0;for(const a of state.accounts){if(state.scope==='all'||a.id===state.scope)b+=Number(a.initial||0);}return b;}
+
+/* ---------- render ---------- */
+function render(){
+  const app=document.getElementById('app');
+  const tabbar=`<div class="tabbar">
+    <button onclick="goToday()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="3.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><circle cx="12" cy="14.5" r="1.5" fill="currentColor" stroke="none"/></svg>今月</button>
+    <button class="accent" onclick="openTxn()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.2v7.6M8.2 12h7.6"/></svg>収入/支出</button>
+    <button onclick="openSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="M3 10h18M7 14.5h4"/></svg>口座</button>
+    <button onclick="openMore()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h8M16 7.5h4M4 16.5h4M12 16.5h8"/><circle cx="14" cy="7.5" r="2.2"/><circle cx="9" cy="16.5" r="2.2"/></svg>設定</button></div>`;
+
+  if(state.accounts.length===0){
+    app.innerHTML=`<div class="sheet-wrap"><div class="body" style="display:flex;align-items:center;justify-content:center">
+      <div class="empty"><b>まずは口座を登録</b>「口座」タブから銀行口座と<br>月初時点の残高を追加すると、<br>ここに資金繰り表が表示されます。</div></div></div>${tabbar}`;
+    return;}
+
+  const y=state.y,m=state.m;
+  const monthStart=new Date(y,m,1),monthEnd=new Date(y,m,dim(y,m));
+  const occ=occurrencesUpTo(monthEnd);
+  let opening=openingBalance();
+  for(const o of occ){if(parse(o.date)<monthStart)opening+= o.type==='income'?o.amount:-o.amount;}
+  const byDay={},ms=toStr(monthStart),me=toStr(monthEnd);
+  for(const o of occ){if(o.date<ms||o.date>me)continue;(byDay[o.date]=byDay[o.date]||[]).push(o);}
+
+  const scopeOpts=`<option value="all"${state.scope==='all'?' selected':''}>全口座</option>`+
+    state.accounts.map(a=>`<option value="${a.id}"${state.scope===a.id?' selected':''}>${esc(a.name)}</option>`).join('');
+
+  const todayStr=toStr(new Date());
+  let rows='',run=opening;
+  for(let d=1;d<=dim(y,m);d++){
+    const dt=new Date(y,m,d),ds=toStr(dt),items=byDay[ds]||[];
+    let inc=0,exp=0;for(const it of items){if(it.type==='income')inc+=it.amount;else exp+=it.amount;}
+    run+=inc-exp;
+    const hol=holidayName(dt),wd=dt.getDay();
+    const wc=hol?'sun':(wd===6?'sat':(wd===0?'sun':''));
+    rows+=`<div class="drow${ds===todayStr?' today':''}" onclick="toggle('${ds}')"${hol?` title="${esc(hol)}"`:''}>
+      <div class="c-date ${wc}">${d}日(${WD[wd]})</div>
+      <div class="c-num inc ${inc?'':'z'}">${yen(inc)}</div>
+      <div class="c-num exp ${exp?'':'z'}">${yen(exp)}</div>
+      <div class="c-num bal">${yen(run)}</div></div>`;
+    if(state.expand===ds){
+      let det='';
+      if(hol)det+=`<div class="hint" style="padding:6px 4px 0;color:var(--sun)">${esc(hol)}</div>`;
+      for(const it of items){const acc=state.accounts.find(a=>a.id===it.accountId);
+        det+=`<div class="ditem"><div>
+          <span class="name ${it.type==='income'?'inc':'exp'}">${esc(it.memo||(it.type==='income'?'収入':'支出'))}</span>
+          ${it.recurring?'<span class="recflag">繰返</span>':''}
+          <div class="meta">${state.scope==='all'&&acc?esc(acc.name)+' ・ ':''}${it.type==='income'?'収入':'支出'}</div></div>
+          <div style="display:flex;align-items:center">
+          <span class="amt ${it.type==='income'?'inc':'exp'}">${it.type==='income'?'+':'−'}${yen(it.amount)}</span>
+          <button class="edit" onclick="event.stopPropagation();editTxn('${it.tid}')">編集</button></div></div>`;}
+      det+=`<button class="dayadd" onclick="event.stopPropagation();openTxn('${ds}')">＋ ${d}日に収入/支出を登録</button>`;
+      rows+=`<div class="detail">${det}</div>`;
+    }
+  }
+
+  app.innerHTML=`
+    <div class="sheet-wrap">
+      <div class="head">
+        <select class="scope" onchange="setScope(this.value)">${scopeOpts}</select>
+        <div class="monthnav"><button onclick="navMonth(-1)">◀</button>
+          <span class="m">${y}年${m+1}月</span><button onclick="navMonth(1)">▶</button></div>
+        <div class="balrow open"><span class="bl-label">月初残高</span><span class="bl-val">${yen(Math.round(opening))}<small>円</small></span></div>
+        <div class="hrow"><div>日付</div><div>収入</div><div>支出</div><div>残高</div></div>
+      </div>
+      <div class="body">${rows}</div>
+      <div class="foot"><span class="bl-label">月末残高</span><span class="bl-val">${yen(Math.round(run))}<small>円</small></span></div>
+    </div>${tabbar}`;
+}
+function toggle(ds){state.expand=state.expand===ds?null:ds;render();}
+function setScope(v){state.scope=v;state.expand=null;render();}
+function navMonth(dir){let m=state.m+dir,y=state.y;if(m<0){m=11;y--;}if(m>11){m=0;y++;}state.y=y;state.m=m;state.expand=null;render();}
+function goToday(){const n=new Date();state.y=n.getFullYear();state.m=n.getMonth();state.expand=null;closeSheet();render();}
+
+/* ---------- transaction modal ---------- */
+let draft=null;
+function openTxn(dateStr){
+  if(state.accounts.length===0){openSettings();toast('先に口座を登録してください');return;}
+  const def=dateStr||toStr(new Date(state.y,state.m,Math.min(new Date().getDate(),dim(state.y,state.m))));
+  draft={id:null,accountId:state.scope==='all'?state.accounts[0].id:state.scope,type:'expense',amount:'',memo:'',startDate:def,freq:'none',interval:1,weekend:'none'};
+  renderTxn();}
+function editTxn(id){const t=state.transactions.find(x=>x.id===id);if(!t)return;
+  draft={id:t.id,accountId:t.accountId,type:t.type,amount:t.amount,memo:t.memo||'',startDate:t.startDate,
+    freq:t.recurrence?t.recurrence.freq:'none',interval:t.recurrence?t.recurrence.interval:1,weekend:t.recurrence?t.recurrence.weekend:'none'};
+  renderTxn();}
+function renderTxn(){
+  const d=draft;
+  const accSel=state.accounts.map(a=>`<option value="${a.id}"${d.accountId===a.id?' selected':''}>${esc(a.name)}</option>`).join('');
+  const fO=[['none','なし'],['daily','毎日'],['monthly','毎月'],['yearly','毎年']].map(([v,l])=>`<option value="${v}"${d.freq===v?' selected':''}>${l}</option>`).join('');
+  const show=d.freq!=='none',unit=d.freq==='daily'?'日':d.freq==='monthly'?'ヶ月':'年';
+  const weO=[['none','調整しない'],['before','前営業日にずらす'],['after','後営業日にずらす']].map(([v,l])=>`<option value="${v}"${d.weekend===v?' selected':''}>${l}</option>`).join('');
+  modal(`
+    <div class="mhdr"><button onclick="closeSheet()">キャンセル</button>
+      <strong>${d.id?'登録の編集':'収入 / 支出'}</strong><button class="save" onclick="saveTxn()">保存</button></div>
+    <div class="seg">
+      <button class="${d.type==='income'?'on inc':''}" onclick="dset('type','income')">収入</button>
+      <button class="${d.type==='expense'?'on exp':''}" onclick="dset('type','expense')">支出</button></div>
+    <div class="grp"><div class="card">
+      <div class="frow"><label>口座</label><select onchange="dset('accountId',this.value)">${accSel}</select></div>
+      <div class="frow"><label>金額</label><input type="number" inputmode="numeric" placeholder="0" value="${d.amount}" oninput="draft.amount=this.value" onfocus="focusFix(this)"></div>
+      <div class="frow"><label>日付</label><input type="date" value="${d.startDate}" onchange="draft.startDate=this.value" onfocus="focusFix(this)"></div>
+      <div class="frow"><label>項目名</label><input type="text" placeholder="家賃・給与 等" value="${esc(d.memo)}" oninput="draft.memo=this.value" onfocus="focusFix(this)"></div>
+    </div></div>
+    <div class="grp"><div class="cap">繰り返し</div><div class="card">
+      <div class="frow"><label>頻度</label><select onchange="dset('freq',this.value)">${fO}</select></div>
+      ${show?`<div class="frow"><label>間隔</label><span class="suffix"><input type="number" inputmode="numeric" min="1" value="${d.interval}" oninput="draft.interval=this.value" onfocus="focusFix(this)">${unit}ごと</span></div>`:''}
+      ${show?`<div class="frow"><label>土日祝の場合</label><select onchange="draft.weekend=this.value">${weO}</select></div>`:''}
+    </div>${show?'<div class="hint">※ 土日・日本の祝日は非営業日として、指定方向の営業日へ自動でずらします。</div>':''}</div>
+    ${d.id?'<button class="btn-danger" onclick="delTxn()">この登録を削除</button>':'<div style="height:14px"></div>'}
+  `);
+}
+function dset(k,v){draft[k]=v;if(k==='type'||k==='freq')renderTxn();}
+function saveTxn(){
+  const amt=Math.round(Number(draft.amount));if(!amt||amt<=0){toast('金額を入力してください');return;}
+  const iv=Math.max(1,Math.round(Number(draft.interval)||1));
+  const rec=draft.freq==='none'?null:{freq:draft.freq,interval:iv,weekend:draft.weekend};
+  const obj={id:draft.id||('t'+Date.now()+Math.floor(Math.random()*1000)),accountId:draft.accountId,type:draft.type,amount:amt,memo:(draft.memo||'').trim(),startDate:draft.startDate,recurrence:rec};
+  if(draft.id){const i=state.transactions.findIndex(x=>x.id===draft.id);state.transactions[i]=obj;}else state.transactions.push(obj);
+  state.expand=draft.startDate;save();closeSheet();render();toast('保存しました');}
+function delTxn(){uconfirm('この登録を削除しますか？（繰り返しの場合は全期間が対象です）',function(){
+  state.transactions=state.transactions.filter(x=>x.id!==draft.id);save();closeSheet();render();toast('削除しました');});}
+
+/* ---------- 口座 ---------- */
+function openSettings(){renderSettings();}
+function renderSettings(){
+  const accs=state.accounts.map(a=>`<div class="listrow">
+    <div><div class="name">${esc(a.name)}</div><div class="sub">月初残高 ${yen(Number(a.initial||0))} 円</div></div>
+    <div><button class="lnk" onclick="editAcc('${a.id}')">編集</button><button class="del" onclick="delAcc('${a.id}')">削除</button></div></div>`).join('')||'<div class="hint">口座が未登録です。</div>';
+  const txns=[...state.transactions].sort((a,b)=>a.startDate<b.startDate?-1:1).map(t=>{
+    const acc=state.accounts.find(a=>a.id===t.accountId),r=t.recurrence;
+    const rt=r?({daily:`${r.interval}日ごと`,monthly:`${r.interval}ヶ月ごと`,yearly:`${r.interval}年ごと`}[r.freq]):'単発';
+    return `<div class="listrow"><div>
+      <div class="name">${esc(t.memo||(t.type==='income'?'収入':'支出'))} <span class="${t.type==='income'?'inc':'exp'}">${t.type==='income'?'+':'−'}${yen(t.amount)}</span></div>
+      <div class="sub">${acc?esc(acc.name):'?'} ・ ${t.startDate}〜 ・ ${rt}</div></div>
+      <button class="lnk" onclick="closeSheet();editTxn('${t.id}')">編集</button></div>`;}).join('')||'<div class="hint">登録データはありません。</div>';
+  modal(`
+    <div class="mhdr"><button onclick="closeSheet()">閉じる</button><strong>口座</strong><span class="spacer"></span></div>
+    <div class="grp"><div class="cap">口座</div>${accs}<button class="btn-primary" onclick="editAcc(null)">＋ 口座を追加</button></div>
+    <div class="grp"><div class="cap">登録データ（収入・支出）</div>${txns}</div><div style="height:14px"></div>
+  `);
+}
+let accDraft=null;
+function editAcc(id){const a=id?state.accounts.find(x=>x.id===id):null;
+  accDraft=a?{id:a.id,name:a.name,initial:a.initial}:{id:null,name:'',initial:''};const d=accDraft;
+  modal(`
+    <div class="mhdr"><button onclick="renderSettings()">戻る</button>
+      <strong>${d.id?'口座の編集':'口座の追加'}</strong><button class="save" onclick="saveAcc()">保存</button></div>
+    <div class="grp"><div class="card">
+      <div class="frow"><label>口座名</label><input type="text" placeholder="A銀行" value="${esc(d.name)}" oninput="accDraft.name=this.value" onfocus="focusFix(this)"></div>
+      <div class="frow"><label>月初残高</label><input type="number" inputmode="numeric" placeholder="0" value="${d.initial}" oninput="accDraft.initial=this.value" onfocus="focusFix(this)"></div>
+    </div><div class="hint">「月初残高」は記録開始時点の残高です。以降は登録した収入・支出で自動計算されます。</div></div>
+    ${d.id?'<button class="btn-danger" onclick="delAcc(accDraft.id)">この口座を削除</button>':'<div style="height:14px"></div>'}
+  `);
+}
+function saveAcc(){const name=(accDraft.name||'').trim();if(!name){toast('口座名を入力してください');return;}
+  const init=Math.round(Number(accDraft.initial)||0);
+  if(accDraft.id){const a=state.accounts.find(x=>x.id===accDraft.id);a.name=name;a.initial=init;}
+  else state.accounts.push({id:'a'+Date.now(),name,initial:init});
+  save();renderSettings();render();toast('保存しました');}
+function delAcc(id){const used=state.transactions.some(t=>t.accountId===id);
+  uconfirm(used?'この口座の収入・支出データも全て削除されます。よろしいですか？':'この口座を削除しますか？',function(){
+    state.accounts=state.accounts.filter(a=>a.id!==id);state.transactions=state.transactions.filter(t=>t.accountId!==id);
+    if(state.scope===id)state.scope='all';save();renderSettings();render();toast('削除しました');});}
+
+/* ---------- 設定（書き出し / 読み込み） ---------- */
+function openMore(){renderMore();}
+function renderMore(){
+  modal(`
+    <div class="mhdr"><button onclick="closeSheet()">閉じる</button><strong>設定</strong><span class="spacer"></span></div>
+    <div class="grp"><div class="cap">データ</div>
+      <button class="btn-primary" onclick="exportData()">データを書き出す</button>
+      <button class="btn-primary sky" onclick="importPrompt()">データを読み込む</button></div>
+    <div class="hint">書き出したテキスト（またはJSONファイル）を保管しておくと、機種変更や復旧の際に読み込めます。読み込むと現在のデータは置き換わります。</div>
+    <div class="grp"><div class="cap">仕様メモ</div><div class="card pad" style="font-size:12.5px;color:var(--sub);line-height:1.7">
+      ・日本の祝日に対応（振替休日含む）。海の日等の特例移動年は未対応の場合があります。<br>
+      ・データはアプリ内に保存されます。定期的な書き出しを推奨します。</div></div>
+    <div style="height:16px"></div>
+  `);
+}
+function exportData(){
+  const json=JSON.stringify({_app:'cashflow',_v:1,_at:new Date().toISOString(),accounts:state.accounts,transactions:state.transactions},null,2);
+  window._exp=json;
+  modal(`
+    <div class="mhdr"><button onclick="renderMore()">戻る</button><strong>書き出し</strong><span class="spacer"></span></div>
+    <div class="grp"><div class="card pad"><textarea class="ta" readonly>${esc(json)}</textarea></div>
+      <button class="btn-primary" onclick="copyExport()">テキストをコピー</button>
+      <button class="btn-primary sky" onclick="downloadExport()">ファイルに保存</button>
+      <div class="hint">コピーが使えない環境では、上の枠を長押し→全選択でコピーしてください。</div></div><div style="height:16px"></div>
+  `);
+}
+function copyExport(){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(window._exp).then(()=>toast('コピーしました')).catch(()=>toast('コピーできませんでした'));}else toast('この環境ではコピー不可');}
+function downloadExport(){try{const b=new Blob([window._exp],{type:'application/json'});const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download='cashflow_'+toStr(new Date())+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('保存しました');}catch(e){toast('この環境では保存不可');}}
+function importPrompt(){
+  modal(`
+    <div class="mhdr"><button onclick="renderMore()">戻る</button><strong>読み込み</strong><span class="spacer"></span></div>
+    <div class="grp"><div class="cap">ファイルから</div><div class="card">
+      <div class="frow"><label>JSONファイル</label><input type="file" accept="application/json,.json" onchange="importFile(event)"></div></div></div>
+    <div class="grp"><div class="cap">テキストを貼り付け</div><div class="card pad">
+      <textarea id="impArea" class="ta" placeholder="書き出したJSONをここに貼り付け"></textarea></div>
+      <button class="btn-primary" onclick="importText()">読み込む</button>
+      <div class="hint">読み込むと現在のデータは上書きされます。事前の書き出しを推奨します。</div></div><div style="height:16px"></div>
+  `);
+}
+function importFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>applyImport(r.result);r.readAsText(f);}
+function importText(){applyImport(document.getElementById('impArea').value);}
+function applyImport(text){let d;try{d=JSON.parse(text);}catch(e){toast('JSONを解析できませんでした');return;}
+  if(!d||!Array.isArray(d.accounts)||!Array.isArray(d.transactions)){toast('データ形式が正しくありません');return;}
+  uconfirm('現在のデータを上書きして読み込みますか？',function(){
+    state.accounts=d.accounts;state.transactions=d.transactions;state.scope='all';
+    save();closeSheet();render();toast('読み込みました');});}
+
+/* ---------- modal + keyboard ---------- */
+function modal(html){const o=document.getElementById('overlay');
+  o.innerHTML=`<div class="modal" onclick="event.stopPropagation()">${html}</div>`;o.classList.add('show');o.onclick=closeSheet;fitOverlay();}
+function closeSheet(){const o=document.getElementById('overlay');o.classList.remove('show');o.innerHTML='';o.style.height='100%';o.style.top='0px';}
+function fitOverlay(){const vv=window.visualViewport,o=document.getElementById('overlay');if(!vv||!o.classList.contains('show'))return;
+  o.style.height=vv.height+'px';o.style.top=vv.offsetTop+'px';}
+function focusFix(el){setTimeout(()=>{fitOverlay();el.scrollIntoView({block:'center',behavior:'smooth'});},250);}
+if(window.visualViewport){window.visualViewport.addEventListener('resize',fitOverlay);window.visualViewport.addEventListener('scroll',fitOverlay);}
+
+/* ---------- confirm dialog (native confirm is blocked in sandbox) ---------- */
+let _uyes=null;
+function uconfirm(msg,onYes){const c=document.getElementById('confirm');
+  c.innerHTML=`<div class="modal cmodal" onclick="event.stopPropagation()"><div class="cmsg">${esc(msg)}</div>
+    <div class="cbtns"><button class="cno" onclick="uclose()">キャンセル</button><button class="cyes" onclick="uok()">OK</button></div></div>`;
+  c.classList.add('show');c.onclick=uclose;_uyes=onYes;}
+function uclose(){const c=document.getElementById('confirm');c.classList.remove('show');c.innerHTML='';_uyes=null;}
+function uok(){const f=_uyes;uclose();if(f)f();}
+
+/* ---------- helpers ---------- */
+let tT;function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),1800);}
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- init ---------- */
+(async function(){const n=new Date();state.y=n.getFullYear();state.m=n.getMonth();await load();render();})();
+</script>
+</body>
+</html>
