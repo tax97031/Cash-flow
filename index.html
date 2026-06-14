@@ -240,6 +240,7 @@ function genDates(t,end){
     let d;
     if(r.freq==='daily'){d=new Date(start);d.setDate(d.getDate()+r.interval*k);}
     else if(r.freq==='monthly'){const mi=start.getMonth()+r.interval*k;const y=start.getFullYear()+Math.floor(mi/12);const m=((mi%12)+12)%12;d=new Date(y,m,Math.min(start.getDate(),dim(y,m)));}
+    else if(r.freq==='monthend'){const mi=start.getMonth()+r.interval*k;const y=start.getFullYear()+Math.floor(mi/12);const m=((mi%12)+12)%12;d=new Date(y,m,dim(y,m));}
     else{const y=start.getFullYear()+r.interval*k;const m=start.getMonth();d=new Date(y,m,Math.min(start.getDate(),dim(y,m)));}
     if(d>cap)break;out.push(d);}
   return out;}
@@ -364,8 +365,8 @@ function renderTxn(){
   const accSel=state.accounts.map(a=>`<option value="${a.id}"${d.accountId===a.id?' selected':''}>${esc(a.name)}</option>`).join('');
   const isLoan=d.kind==='loan';
   const show=d.freq!=='none';
-  const unit=d.freq==='daily'?'日':d.freq==='monthly'?'ヶ月':'年';
-  const fO=[['none','なし'],['daily','毎日'],['monthly','毎月'],['yearly','毎年']].map(([v,l])=>`<option value="${v}"${d.freq===v?' selected':''}>${l}</option>`).join('');
+  const unit=d.freq==='daily'?'日':(d.freq==='monthly'||d.freq==='monthend')?'ヶ月':'年';
+  const fO=[['none','なし'],['daily','毎日'],['monthly','毎月'],['monthend','毎月（月末）'],['yearly','毎年']].map(([v,l])=>`<option value="${v}"${d.freq===v?' selected':''}>${l}</option>`).join('');
   const weO=[['none','調整しない'],['before','前営業日にずらす'],['after','後営業日にずらす']].map(([v,l])=>`<option value="${v}"${d.weekend===v?' selected':''}>${l}</option>`).join('');
   const endO=[['none','なし'],['count','回数'],['date','日付']].map(([v,l])=>`<option value="${v}"${d.endType===v?' selected':''}>${l}</option>`).join('');
   const isRecurring=d.id&&(isLoan||(d.freq!=='none'));
@@ -399,7 +400,7 @@ function renderTxn(){
       <div class="frow"><label>終了</label><select onchange="dset('endType',this.value)">${endO}</select></div>
       ${d.endType==='count'?`<div class="frow"><label>回数</label><span class="suffix"><input type="number" inputmode="numeric" min="1" value="${d.endCount}" oninput="draft.endCount=this.value" onfocus="focusFix(this)">回</span></div>`:''}
       ${d.endType==='date'?`<div class="frow"><label>終了日</label><input type="date" value="${d.endDate}" onchange="draft.endDate=this.value" onfocus="focusFix(this)"></div>`:''}
-    </div>${(show||isLoan)?'<div class="hint">※ 土日・日本の祝日は非営業日として、指定方向の営業日へ自動でずらします。</div>':''}</div>
+    </div>${(show||isLoan)?'<div class="hint">※ 土日・日本の祝日は非営業日として、指定方向の営業日へ自動でずらします。'+(d.freq==='monthend'?'月末は「前営業日にずらす」が実務的です。':'')+'</div>':''}</div>
     ${showEditMode?`<div class="grp"><div class="cap">変更範囲</div>
       <div class="seg">
         <button class="${d.editMode==='all'?'on exp':''}" onclick="dset('editMode','all')">以降すべて</button>
@@ -447,7 +448,7 @@ function renderSettings(){
     <div><button class="lnk" onclick="editAcc('${a.id}')">編集</button><button class="del" onclick="delAcc('${a.id}')">削除</button></div></div>`).join('')||'<div class="hint">口座が未登録です。</div>';
   const txns=[...state.transactions].sort((a,b)=>a.startDate<b.startDate?-1:1).map(t=>{
     const acc=state.accounts.find(a=>a.id===t.accountId),r=t.recurrence;
-    const rt=r?({daily:`${r.interval}日ごと`,monthly:`${r.interval}ヶ月ごと`,yearly:`${r.interval}年ごと`}[r.freq]||'繰返'):'単発';
+    const rt=r?({daily:`${r.interval}日ごと`,monthly:`${r.interval}ヶ月ごと`,monthend:`${r.interval>1?r.interval+'ヶ月ごと・':''}月末`,yearly:`${r.interval}年ごと`}[r.freq]||'繰返'):'単発';
     const kind=t.kind||(t.type||'expense');
     const lbl=kind==='loan'?'ローン':(kind==='income'?'収入':'支出');
     const cls=kind==='income'?'inc':'exp';
