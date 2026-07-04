@@ -126,6 +126,10 @@
   .frow:last-child{border-bottom:none}
   .frow label{font-size:14.5px;font-weight:600}
   .frow input,.frow select{border:none;background:none;font-family:inherit;font-size:14.5px;text-align:right;color:var(--ink);max-width:62%}
+  .frow select{appearance:none;-webkit-appearance:none;direction:rtl;padding-right:20px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23262a40' stroke-width='1.8' fill='none'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right center}
+  .frow select option{direction:ltr;text-align:left}
   .frow input[type=file]{font-size:12px}
   .frow input::placeholder{color:#c4c8db}
   .frow .suffix{font-size:14px;color:var(--sub);display:flex;align-items:center;gap:6px}
@@ -276,7 +280,8 @@ function render(){
 
   if(state.accounts.length===0){
     app.innerHTML=`<div class="sheet-wrap"><div class="body" style="display:flex;align-items:center;justify-content:center">
-      <div class="empty"><b>まずは口座を登録</b>「口座」タブから銀行口座と<br>月初時点の残高を追加すると、<br>ここに資金繰り表が表示されます。</div></div></div>${tabbar}`;
+      <div class="empty"><b>まずは口座を登録</b>銀行口座と月初時点の残高を登録すると、<br>ここに資金繰り表が表示されます。
+      <button class="btn-primary" style="width:auto;max-width:280px;margin:22px auto 0;padding:13px 30px" onclick="editAcc(null)">＋ 口座を登録</button></div></div></div>${tabbar}`;
     return;}
 
   const y=state.y,m=state.m;
@@ -358,7 +363,7 @@ function editTxn(id,dateStr){
     endCount:t.recurrence?t.recurrence.endCount||'':'',
     endDate:t.recurrence?t.recurrence.endDate||'':'',
     bonusMonths:[...(t.bonusMonths||[])],bonusAmount:t.bonusAmount||'',
-    editDate:dateStr||null,editMode:'all'};
+    editDate:dateStr||null,editMode:'single'};
   renderTxn();}
 function renderTxn(){
   const d=draft;
@@ -446,7 +451,7 @@ function renderSettings(){
   const accs=state.accounts.map(a=>`<div class="listrow">
     <div><div class="name">${esc(a.name)}</div><div class="sub">月初残高 ${yen(Number(a.initial||0))} 円</div></div>
     <div><button class="lnk" onclick="editAcc('${a.id}')">編集</button><button class="del" onclick="delAcc('${a.id}')">削除</button></div></div>`).join('')||'<div class="hint">口座が未登録です。</div>';
-  const txns=[...state.transactions].sort((a,b)=>a.startDate<b.startDate?-1:1).map(t=>{
+  const txns=[...state.transactions].filter(t=>t.recurrence).sort((a,b)=>a.startDate<b.startDate?-1:1).map(t=>{
     const acc=state.accounts.find(a=>a.id===t.accountId),r=t.recurrence;
     const rt=r?({daily:`${r.interval}日ごと`,monthly:`${r.interval}ヶ月ごと`,monthend:`${r.interval>1?r.interval+'ヶ月ごと・':''}月末`,yearly:`${r.interval}年ごと`}[r.freq]||'繰返'):'単発';
     const kind=t.kind||(t.type||'expense');
