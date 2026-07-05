@@ -41,18 +41,19 @@
 
   .head{flex:none;padding:12px 0 0}
   .scope{display:block;margin:0 14px;width:calc(100% - 28px);border:none;background:var(--indigo-soft);color:var(--indigo-d);font-family:inherit;
-    font-size:15px;font-weight:600;padding:11px 14px;border-radius:13px;appearance:none;
+    font-size:15px;font-weight:600;padding:11px 14px;border-radius:16px;appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234453d6' stroke-width='1.8' fill='none'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right 16px center}
   .monthnav{display:flex;align-items:center;justify-content:center;gap:18px;padding:12px 0 4px}
   .monthnav button{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:none;
-    background:var(--sky-soft);color:var(--sky-d);border-radius:12px;font-size:15px;cursor:pointer}
+    background:var(--indigo-soft);color:var(--indigo);border-radius:12px;font-size:15px;cursor:pointer}
   .monthnav button:active{transform:scale(.92)}
-  .monthnav .m{font-size:18px;font-weight:700;min-width:130px;text-align:center;letter-spacing:.3px}
+  .monthnav input.m{width:auto;height:auto;background:none;border:none;color:var(--ink);font-family:inherit;font-size:18px;font-weight:700;min-width:150px;text-align:center;letter-spacing:.3px;appearance:none;-webkit-appearance:none}
   .balrow{display:flex;align-items:baseline;justify-content:space-between;padding:9px var(--rpad)}
   .balrow.open{margin-top:14px}
   .bl-label{font-size:13px;font-weight:600;color:var(--sub)}
   .bl-val{font-size:19px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:.2px}
+  .bl-val.neg{color:var(--exp)}
   .bl-val small{font-size:12px;font-weight:600;color:var(--sub);margin-left:2px}
   .hrow{display:grid;grid-template-columns:var(--cols);padding:7px var(--rpad);border-bottom:1px solid var(--line)}
   .hrow>div{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.3px;text-align:right}
@@ -66,26 +67,30 @@
   .c-date{font-size:13.5px;font-weight:600}
   .c-num{text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
   .c-num.bal{font-weight:700}
+  .c-num.bal.neg{color:var(--exp)}
   .c-num.z{color:#c9ccdb;font-weight:500}
   .inc{color:var(--inc)} .exp{color:var(--exp)}
-  .sat{color:var(--sat)} .sun{color:var(--sun)}
+  .sat{color:var(--sat)} .sun{color:var(--exp)}
   .detail{background:#f6f8ff;border-bottom:1px solid var(--line);padding:6px 12px 12px}
   .ditem{display:flex;align-items:center;justify-content:space-between;background:var(--card);
     border-radius:12px;padding:10px 14px;margin-top:8px;box-shadow:0 1px 4px rgba(40,46,90,.05)}
   .ditem .name{font-size:14px;font-weight:600}
-  .ditem .meta{font-size:11.5px;color:var(--sub);margin-top:2px}
+  .ditem .meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:5px}
+  .ditem .mflag{font-size:10px;font-weight:600;color:#8b90a3;background:#eef0f5;border-radius:6px;padding:2px 7px}
   .ditem .recflag{display:inline-block;font-size:10px;font-weight:700;color:var(--indigo-d);
     background:var(--indigo-soft);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
   .ditem .amt{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums}
-  .ditem .edit{margin-left:10px;background:none;border:none;color:var(--indigo);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .edit,.lnk{background:var(--indigo);border:none;color:#fff;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:6px 13px;border-radius:12px}
+  .del,.del-in{background:var(--exp);border:none;color:#fff;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:6px 13px;border-radius:12px}
   .loanflag{display:inline-block;font-size:10px;font-weight:700;color:var(--exp);background:#fff0f3;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:middle}
-  .bonusflag{display:inline-block;font-size:10px;font-weight:700;color:#b45309;background:#fef3c7;border-radius:6px;padding:1px 6px;margin-left:5px;vertical-align:middle}
+  .bonusflag{display:inline-block;font-size:10px;font-weight:700;color:#b45309;background:#fef3c7;border-radius:6px;padding:2px 7px;vertical-align:middle}
   .mbtnrow{display:flex;flex-wrap:wrap;gap:7px;padding:2px 0 4px}
-  .mbtn{flex:0 0 calc(25% - 6px);border:1.5px solid var(--line);background:none;border-radius:10px;padding:8px 2px;font-family:inherit;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer}
+  .mbtn{flex:0 0 calc(25% - 6px);border:1.5px solid var(--line);background:none;border-radius:13px;padding:8px 2px;font-family:inherit;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer}
   .mbtn.on{background:var(--exp);border-color:var(--exp);color:#fff}
-  .dayadd{width:100%;margin-top:8px;padding:11px;border:1.5px dashed #bcd6ec;border-radius:12px;background:none;
-    color:var(--sky-d);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
-  .dayadd:active{background:var(--sky-soft)}
+  .dayadd{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;margin:8px 0 0;padding:9px;min-height:62px;border:1.5px solid #b7c0f4;border-radius:12px;background:var(--indigo-soft);
+    color:var(--indigo-d);cursor:pointer;font-family:inherit;font-size:15px;font-weight:700}
+  .dayadd svg{width:22px;height:22px}
+  .dayadd:active{filter:brightness(.96)}
 
   .foot{flex:none;display:flex;align-items:baseline;justify-content:space-between;padding:13px var(--rpad);
     background:var(--card);border-top:1px solid var(--line)}
@@ -109,12 +114,12 @@
     box-shadow:0 26px 70px rgba(20,22,55,.34);-webkit-overflow-scrolling:touch}
   .mhdr{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;
     padding:16px 18px 12px;background:var(--bg);z-index:2}
-  .mhdr strong{font-size:16px;font-weight:700}
-  .mhdr button{background:none;border:none;font-family:inherit;font-size:15px;color:var(--indigo);cursor:pointer;padding:4px 2px}
-  .mhdr .save{font-weight:800;color:var(--indigo-d)}
+  .mhdr strong{position:absolute;left:50%;transform:translateX(-50%);font-size:16px;font-weight:700;white-space:nowrap;pointer-events:none}
+  .mhdr button{background:var(--indigo);border:1.5px solid var(--indigo);border-radius:13px;font-family:inherit;font-size:14px;color:#fff;cursor:pointer;padding:7px 13px;font-weight:700}
+  .mhdr .save{font-weight:800}
   .mhdr .spacer{width:54px}
-  .seg{display:flex;margin:4px 18px 0;background:#e1e5f3;border-radius:13px;padding:3px}
-  .seg button{flex:1;border:none;background:none;font-family:inherit;padding:9px;border-radius:10px;
+  .seg{display:flex;margin:4px 18px 0;background:#e1e5f3;border-radius:16px;padding:3px}
+  .seg button{flex:1;border:none;background:none;font-family:inherit;padding:9px;border-radius:13px;
     font-size:14px;font-weight:700;color:var(--sub);cursor:pointer}
   .seg button.on{background:var(--card);box-shadow:0 2px 6px rgba(40,46,90,.12)}
   .seg button.on.inc{color:var(--inc)} .seg button.on.exp{color:var(--exp)}
@@ -125,7 +130,7 @@
   .frow{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line)}
   .frow:last-child{border-bottom:none}
   .frow label{font-size:14.5px;font-weight:600}
-  .frow input,.frow select{border:none;background:none;font-family:inherit;font-size:14.5px;text-align:right;color:var(--ink);max-width:62%}
+  .frow input,.frow select{border:none;background:none;font-family:inherit;font-size:16px;text-align:right;color:var(--ink);max-width:62%}
   .frow select{appearance:none;-webkit-appearance:none;direction:rtl;padding-right:20px;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23262a40' stroke-width='1.8' fill='none'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right center}
@@ -135,20 +140,41 @@
   .frow .suffix{font-size:14px;color:var(--sub);display:flex;align-items:center;gap:6px}
   .frow .suffix input{width:52px;text-align:center}
   .ta{width:100%;min-height:150px;border:none;background:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-    font-size:12px;line-height:1.5;resize:vertical;color:var(--ink);outline:none}
+    font-size:16px;line-height:1.5;resize:vertical;color:var(--ink);outline:none}
   .hint{font-size:11.5px;color:var(--sub);line-height:1.6;padding:10px 22px 0}
-  .btn-primary{display:block;width:calc(100% - 28px);margin:16px 14px 0;padding:14px;border:none;border-radius:14px;
+  .btn-primary{display:block;width:calc(100% - 28px);margin:16px 14px 0;padding:14px;border:none;border-radius:18px;
     background:var(--indigo);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(91,108,240,.35)}
   .btn-primary.sky{background:var(--sky);box-shadow:0 8px 18px rgba(25,183,232,.32)}
   .btn-primary:active{filter:brightness(.93)}
-  .btn-danger{display:block;width:calc(100% - 28px);margin:14px 14px 20px;padding:13px;border:none;border-radius:14px;
+  .btn-danger{display:block;width:calc(100% - 28px);margin:14px 14px 20px;padding:13px;border:none;border-radius:18px;
     background:var(--card);color:var(--exp);font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer}
   .listrow{display:flex;justify-content:space-between;align-items:center;background:var(--card);
-    margin:0 14px 8px;border-radius:14px;padding:13px 16px;box-shadow:0 2px 8px rgba(40,46,90,.05)}
+    margin:0 14px 8px;border-radius:18px;padding:13px 16px;box-shadow:0 2px 8px rgba(40,46,90,.05)}
   .listrow .name{font-size:14.5px;font-weight:600}
   .listrow .sub{font-size:11.5px;color:var(--sub);margin-top:2px}
-  .listrow .lnk{background:none;border:none;color:var(--indigo);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
-  .listrow .del{background:none;border:none;color:var(--exp);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-left:8px}
+  .listrow .lnk{background:none;border:1.5px solid #d6dbef;border-radius:9px;color:var(--indigo);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:5px 11px}
+  .listrow .del{background:none;border:1.5px solid #f3c9d2;border-radius:9px;color:var(--exp);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:5px 11px;margin-left:6px}
+  .acard{background:#fff;border-radius:20px;margin:0 14px 10px;overflow:clip;box-shadow:0 2px 8px rgba(40,46,90,.06)}
+  .arow{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;background:#eceef7;position:sticky;top:0;z-index:2}
+  .arow::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;background:var(--bg)}
+  .arow .chev{color:#9aa0b8;font-size:12px;transition:transform .2s;flex-shrink:0}
+  .arow .chev.op{transform:rotate(180deg)}
+  .arow .ainfo{flex:1;min-width:0}
+  .arow .name{font-size:15px;font-weight:700}
+  .arow .sub{font-size:12px;color:var(--sub);margin-top:2px}
+  .asub{max-height:0;overflow:hidden;transition:max-height .38s cubic-bezier(.4,0,.2,1);}
+  .asub.op{max-height:900px;}
+  .asub-inner{padding:2px 16px 10px;}
+  .txrow{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #f2f3f8}
+  .txrow:last-child{border-bottom:none}
+  .txrow .tx-main{flex:1;min-width:0}
+  .txrow .name{font-size:14px;font-weight:600}
+  .txrow .sub{font-size:11.5px;color:var(--sub);margin-top:3px}
+  .txrow .tx-amt{font-size:14px;font-weight:700;white-space:nowrap;text-align:right;flex-shrink:0}
+  .txrow .tx-amt.inc{color:var(--inc)}
+  .txrow .tx-amt.exp{color:var(--exp)}
+  .btns{display:flex;gap:6px;flex-shrink:0}
+  .txempty{font-size:12.5px;color:var(--sub);padding:12px 2px}
 
   .toast{position:fixed;left:50%;bottom:calc(var(--tab-h) + 28px);transform:translateX(-50%);
     background:rgba(28,30,58,.92);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:22px;
@@ -280,8 +306,9 @@ function render(){
 
   if(state.accounts.length===0){
     app.innerHTML=`<div class="sheet-wrap"><div class="body" style="display:flex;align-items:center;justify-content:center">
-      <div class="empty"><b>まずは口座を登録</b>銀行口座と月初時点の残高を登録すると、<br>ここに資金繰り表が表示されます。
-      <button class="btn-primary" style="width:auto;max-width:280px;margin:22px auto 0;padding:13px 30px" onclick="editAcc(null)">＋ 口座を登録</button></div></div></div>${tabbar}`;
+      <div class="empty">
+      <button class="btn-primary" style="width:240px;max-width:100%;margin:0 auto;padding:13px 30px;display:block" onclick="editAcc(null)">＋ 口座を登録</button>
+      <button class="btn-primary sky" style="width:240px;max-width:100%;margin:14px auto 0;padding:13px 30px;display:block" onclick="importPrompt()">データを読み込む</button></div></div></div>${tabbar}`;
     return;}
 
   const y=state.y,m=state.m;
@@ -307,21 +334,20 @@ function render(){
       <div class="c-date ${wc}">${d}日(${WD[wd]})</div>
       <div class="c-num inc ${inc?'':'z'}">${yen(inc)}</div>
       <div class="c-num exp ${exp?'':'z'}">${yen(exp)}</div>
-      <div class="c-num bal">${yen(run)}</div></div>`;
+      <div class="c-num bal${run<0?' neg':''}">${yen(run)}</div></div>`;
     if(state.expand===ds){
       let det='';
-      if(hol)det+=`<div class="hint" style="padding:6px 4px 0;color:var(--sun)">${esc(hol)}</div>`;
+      if(hol)det+=`<div class="hint" style="padding:6px 4px 0;color:var(--exp)">${esc(hol)}</div>`;
       for(const it of items){const acc=state.accounts.find(a=>a.id===it.accountId);
+        const metaHtml=`${state.scope==='all'&&acc?`<span class="mflag">${esc(acc.name)}</span>`:''}${it.recurring?'<span class="mflag">繰返</span>':''}`;
         det+=`<div class="ditem"><div>
-          <span class="name ${it.type==='income'?'inc':'exp'}">${esc(it.memo||(it.type==='income'?'収入':'支出'))}</span>
-          ${it.recurring?'<span class="recflag">繰返</span>':''}
-          ${it.isLoan?'<span class="loanflag">ローン</span>':''}
-          ${it.isBonus?'<span class="bonusflag">ボーナス</span>':''}
-          <div class="meta">${state.scope==='all'&&acc?esc(acc.name)+' ・ ':''}${it.isLoan?'ローン':it.type==='income'?'収入':'支出'}</div></div>
-          <div style="display:flex;align-items:center">
+          <span class="name">${esc(it.memo||(it.type==='income'?'収入':'支出'))}</span>
+          ${metaHtml?`<div class="meta">${metaHtml}</div>`:''}</div>
+          <div style="display:flex;align-items:center;gap:7px">
           <span class="amt ${it.type==='income'?'inc':'exp'}">${it.type==='income'?'+':'−'}${yen(it.amount)}</span>
-          <button class="edit" onclick="event.stopPropagation();editTxn('${it.tid}','${it.date}')">編集</button></div></div>`;}
-      det+=`<button class="dayadd" onclick="event.stopPropagation();openTxn('${ds}')">＋ ${d}日に収入/支出を登録</button>`;
+          <button class="edit" onclick="event.stopPropagation();editTxn('${it.tid}','${it.date}')">編集</button>
+          <button class="del-in" onclick="event.stopPropagation();delOccur('${it.tid}','${it.date}')">削除</button></div></div>`;}
+      det+=`<button class="dayadd" onclick="event.stopPropagation();openTxn('${ds}')">＋ 収入・支出を登録</button>`;
       rows+=`<div class="detail">${det}</div>`;
     }
   }
@@ -331,18 +357,20 @@ function render(){
       <div class="head">
         <select class="scope" onchange="setScope(this.value)">${scopeOpts}</select>
         <div class="monthnav"><button onclick="navMonth(-1)">◀</button>
-          <span class="m">${y}年${m+1}月</span><button onclick="navMonth(1)">▶</button></div>
-        <div class="balrow open"><span class="bl-label">月初残高</span><span class="bl-val">${yen(Math.round(opening))}<small>円</small></span></div>
+          <input type="month" class="m" value="${y}-${String(m+1).padStart(2,'0')}" onchange="pickMonth(this.value)"><button onclick="navMonth(1)">▶</button></div>
+        <div class="balrow open"><span class="bl-label">月初残高</span><span class="bl-val${opening<0?' neg':''}">${yen(Math.round(opening))}<small>円</small></span></div>
         <div class="hrow"><div>日付</div><div>収入</div><div>支出</div><div>残高</div></div>
       </div>
       <div class="body">${rows}</div>
-      <div class="foot"><span class="bl-label">月末残高</span><span class="bl-val">${yen(Math.round(run))}<small>円</small></span></div>
+      <div class="foot"><span class="bl-label">月末残高</span><span class="bl-val${run<0?' neg':''}">${yen(Math.round(run))}<small>円</small></span></div>
     </div>${tabbar}`;
 }
-function toggle(ds){state.expand=state.expand===ds?null:ds;const b=document.querySelector('.body');const sc=b?b.scrollTop:0;render();const nb=document.querySelector('.body');if(nb)nb.scrollTop=sc;}
+function toggle(ds){const opening=state.expand!==ds;state.expand=opening?ds:null;const b=document.querySelector('.body');const sc=b?b.scrollTop:0;render();const nb=document.querySelector('.body');if(nb)nb.scrollTop=sc;if(opening)requestAnimationFrame(()=>{const dt=document.querySelector('.detail');if(dt)dt.scrollIntoView({block:'nearest',behavior:'smooth'});});}
 function setScope(v){state.scope=v;state.expand=null;render();}
 function navMonth(dir){let m=state.m+dir,y=state.y;if(m<0){m=11;y--;}if(m>11){m=0;y++;}state.y=y;state.m=m;state.expand=null;render();}
-function goToday(){const n=new Date();state.y=n.getFullYear();state.m=n.getMonth();state.expand=null;closeSheet();render();}
+function goToday(){const n=new Date();state.y=n.getFullYear();state.m=n.getMonth();state.expand=null;closeSheet();render();scrollToToday();}
+function scrollToToday(){requestAnimationFrame(()=>{const el=document.querySelector('.drow.today');if(el)el.scrollIntoView({block:'center'});});}
+function pickMonth(v){if(!v)return;const p=v.split('-');state.y=Number(p[0]);state.m=Number(p[1])-1;state.expand=null;render();}
 
 /* ---------- transaction modal ---------- */
 let draft=null;
@@ -389,9 +417,9 @@ function renderTxn(){
     <div class="grp"><div class="card">
       <div class="frow"><label>口座</label><select onchange="dset('accountId',this.value)">${accSel}</select></div>
       ${isLoan?`
-        <div class="frow"><label>毎月の返済額</label><input type="number" inputmode="numeric" placeholder="0" value="${d.amount}" oninput="draft.amount=this.value" onfocus="focusFix(this)"></div>
-        <div class="frow"><label>ボーナス月の返済額</label><input type="number" inputmode="numeric" placeholder="0" value="${d.bonusAmount}" oninput="draft.bonusAmount=this.value" onfocus="focusFix(this)"></div>
-      `:`<div class="frow"><label>金額</label><input type="number" inputmode="numeric" placeholder="0" value="${d.amount}" oninput="draft.amount=this.value" onfocus="focusFix(this)"></div>`}
+        <div class="frow"><label>毎月の返済額</label><input type="text" inputmode="numeric" placeholder="0" value="${d.amount?Number(d.amount).toLocaleString():''}" oninput="draft.amount=this.value.replace(/[^0-9]/g,'');this.value=draft.amount?Number(draft.amount).toLocaleString():''" onfocus="focusFix(this)"></div>
+        <div class="frow"><label>ボーナス月の返済額</label><input type="text" inputmode="numeric" placeholder="0" value="${d.bonusAmount?Number(d.bonusAmount).toLocaleString():''}" oninput="draft.bonusAmount=this.value.replace(/[^0-9]/g,'');this.value=draft.bonusAmount?Number(draft.bonusAmount).toLocaleString():''" onfocus="focusFix(this)"></div>
+      `:`<div class="frow"><label>金額</label><input type="text" inputmode="numeric" placeholder="0" value="${d.amount?Number(d.amount).toLocaleString():''}" oninput="draft.amount=this.value.replace(/[^0-9]/g,'');this.value=draft.amount?Number(draft.amount).toLocaleString():''" onfocus="focusFix(this)"></div>`}
       <div class="frow"><label>${isLoan?'返済開始日':'日付'}</label><input type="date" value="${d.startDate}" onchange="draft.startDate=this.value" onfocus="focusFix(this)"></div>
       <div class="frow"><label>項目名</label><input type="text" placeholder="${isLoan?'住宅ローン等':'家賃・給与 等'}" value="${esc(d.memo)}" oninput="draft.memo=this.value" onfocus="focusFix(this)"></div>
     </div></div>
@@ -405,7 +433,7 @@ function renderTxn(){
       <div class="frow"><label>終了</label><select onchange="dset('endType',this.value)">${endO}</select></div>
       ${d.endType==='count'?`<div class="frow"><label>回数</label><span class="suffix"><input type="number" inputmode="numeric" min="1" value="${d.endCount}" oninput="draft.endCount=this.value" onfocus="focusFix(this)">回</span></div>`:''}
       ${d.endType==='date'?`<div class="frow"><label>終了日</label><input type="date" value="${d.endDate}" onchange="draft.endDate=this.value" onfocus="focusFix(this)"></div>`:''}
-    </div>${(show||isLoan)?'<div class="hint">※ 土日・日本の祝日は非営業日として、指定方向の営業日へ自動でずらします。'+(d.freq==='monthend'?'月末は「前営業日にずらす」が実務的です。':'')+'</div>':''}</div>
+    </div></div>
     ${showEditMode?`<div class="grp"><div class="cap">変更範囲</div>
       <div class="seg">
         <button class="${d.editMode==='all'?'on exp':''}" onclick="dset('editMode','all')">以降すべて</button>
@@ -432,6 +460,28 @@ function saveTxn(){
     if(isLoan){ov.bonusMonths=[];ov.bonusAmount=0;}
     state.transactions.push(ov);
     state.expand=draft.editDate;save();closeSheet();render();toast('この回のみ変更しました');return;}
+  // 以降すべて：編集日で系列を分割（過去は据え置き）
+  if(draft.id&&draft.editDate&&draft.editMode==='all'){
+    const master=state.transactions.find(x=>x.id===draft.id);
+    if(master){
+      const editD=parse(draft.editDate),startD=parse(master.startDate);
+      const future={id:'t'+Date.now()+Math.floor(Math.random()*1000),accountId:draft.accountId,kind:draft.kind,
+        type:isLoan?'expense':(draft.kind==='income'?'income':'expense'),
+        amount:amt,memo:(draft.memo||'').trim(),startDate:draft.editDate,recurrence:rec,excludes:[]};
+      if(isLoan){future.bonusMonths=[...draft.bonusMonths];future.bonusAmount=Math.round(Number(draft.bonusAmount)||0);}
+      if(editD<=startD){
+        future.id=master.id;future.excludes=master.excludes||[];
+        const i=state.transactions.findIndex(x=>x.id===master.id);state.transactions[i]=future;
+      }else{
+        const db=new Date(editD);db.setDate(db.getDate()-1);
+        const mr=master.recurrence||{};
+        master.recurrence={freq:mr.freq,interval:mr.interval||1,weekend:mr.weekend||'none',endType:'date',endDate:toStr(db)};
+        master.excludes=(master.excludes||[]).filter(x=>x<draft.editDate);
+        state.transactions.push(future);
+      }
+      state.expand=draft.editDate;save();closeSheet();render();toast('この回以降を変更しました');return;
+    }
+  }
   const prev=draft.id?state.transactions.find(x=>x.id===draft.id):null;
   const obj={id:draft.id||('t'+Date.now()+Math.floor(Math.random()*1000)),
     accountId:draft.accountId,kind:draft.kind,
@@ -444,29 +494,55 @@ function saveTxn(){
   state.expand=draft.startDate;save();closeSheet();render();toast('保存しました');}
 function delTxn(){uconfirm('この登録を削除しますか？（繰り返しの場合は全期間が対象です）',function(){
   state.transactions=state.transactions.filter(x=>x.id!==draft.id);save();closeSheet();render();toast('削除しました');});}
+function delOccur(tid,ds){const t=state.transactions.find(x=>x.id===tid);if(!t)return;
+  const rec=t.recurrence&&t.recurrence.freq&&t.recurrence.freq!=='none';
+  uconfirm(rec?ds.replace(/-/g,'.')+' のこの回を削除しますか？':'この登録を削除しますか？',function(){
+    if(rec)t.excludes=[...(t.excludes||[]),ds];
+    else state.transactions=state.transactions.filter(x=>x.id!==tid);
+    save();render();toast('削除しました');});}
+function delTxnById(id){uconfirm('この登録を削除しますか？（繰り返しの場合は全期間が対象です）',function(){
+  state.transactions=state.transactions.filter(x=>x.id!==id);save();renderSettings();render();toast('削除しました');});}
 
 /* ---------- 口座 ---------- */
 function openSettings(){renderSettings();}
 function renderSettings(){
-  const accs=state.accounts.map(a=>`<div class="listrow">
-    <div><div class="name">${esc(a.name)}</div><div class="sub">月初残高 ${yen(Number(a.initial||0))} 円</div></div>
-    <div><button class="lnk" onclick="editAcc('${a.id}')">編集</button><button class="del" onclick="delAcc('${a.id}')">削除</button></div></div>`).join('')||'<div class="hint">口座が未登録です。</div>';
-  const txns=[...state.transactions].filter(t=>t.recurrence).sort((a,b)=>a.startDate<b.startDate?-1:1).map(t=>{
-    const acc=state.accounts.find(a=>a.id===t.accountId),r=t.recurrence;
-    const rt=r?({daily:`${r.interval}日ごと`,monthly:`${r.interval}ヶ月ごと`,monthend:`${r.interval>1?r.interval+'ヶ月ごと・':''}月末`,yearly:`${r.interval}年ごと`}[r.freq]||'繰返'):'単発';
-    const kind=t.kind||(t.type||'expense');
-    const lbl=kind==='loan'?'ローン':(kind==='income'?'収入':'支出');
-    const cls=kind==='income'?'inc':'exp';
-    const pfx=kind==='income'?'+':'−';
-    return `<div class="listrow"><div>
-      <div class="name">${esc(t.memo||lbl)} <span class="${cls}">${pfx}${yen(t.amount)}</span></div>
-      <div class="sub">${acc?esc(acc.name):'?'} ・ ${t.startDate}〜 ・ ${rt}</div></div>
-      <button class="lnk" onclick="closeSheet();editTxn('${t.id}')">編集</button></div>`;}).join('')||'<div class="hint">登録データはありません。</div>';
+  const rtOf=(r)=>r?({daily:`${r.interval}日ごと`,monthly:`${r.interval}ヶ月ごと`,monthend:`${r.interval>1?r.interval+'ヶ月ごと・':''}月末`,yearly:`${r.interval}年ごと`}[r.freq]||'繰返'):'単発';
+  const cards=state.accounts.map(a=>{
+    const open=state.expandAcc===a.id;
+    const list=[...state.transactions].filter(t=>t.recurrence&&t.accountId===a.id).sort((x,y)=>x.startDate<y.startDate?-1:1).map(t=>{
+      const r=t.recurrence,kind=t.kind||(t.type||'expense');
+      const lbl=kind==='loan'?'ローン':(kind==='income'?'収入':'支出');
+      const cls=kind==='income'?'inc':'exp',pfx=kind==='income'?'+':'−';
+      return `<div class="txrow">
+        <div class="tx-main"><div class="name">${esc(t.memo||lbl)}</div><div class="sub">${t.startDate.replace(/-/g,'.')}</div><div class="sub">${rtOf(r)}</div></div>
+        <div class="tx-amt ${cls}">${pfx}${yen(t.amount)}</div>
+        <div class="btns"><button class="lnk" onclick="event.stopPropagation();closeSheet();editTxn('${t.id}')">編集</button><button class="del" onclick="event.stopPropagation();delTxnById('${t.id}')">削除</button></div></div>`;
+    }).join('')||'<div class="txempty">登録データはありません。</div>';
+    return `<div class="acard" data-acc-id="${a.id}">
+      <div class="arow" onclick="toggleAcc('${a.id}')">
+        <span class="chev${open?' op':''}">▾</span>
+        <div class="ainfo"><div class="name">${esc(a.name)}</div><div class="sub">登録残高 ${yen(Number(a.initial||0))} 円</div></div>
+        <div class="btns"><button class="lnk" onclick="event.stopPropagation();editAcc('${a.id}')">編集</button><button class="del" onclick="event.stopPropagation();delAcc('${a.id}')">削除</button></div>
+      </div>
+      <div class="asub${open?' op':''}"><div class="asub-inner">${list}</div></div>
+    </div>`;
+  }).join('')||'<div class="hint">口座が未登録です。</div>';
   modal(`
     <div class="mhdr"><button onclick="closeSheet()">閉じる</button><strong>口座</strong><span class="spacer"></span></div>
-    <div class="grp"><div class="cap">口座</div>${accs}<button class="btn-primary" onclick="editAcc(null)">＋ 口座を追加</button></div>
-    <div class="grp"><div class="cap">登録データ（収入・支出・ローン）</div>${txns}</div><div style="height:14px"></div>
+    <div class="grp" style="height:80vh;overflow-y:auto;margin-top:0">
+      <button class="btn-primary" onclick="editAcc(null)" style="margin-bottom:14px">＋ 口座を追加</button>
+      ${cards}
+    </div><div style="height:14px"></div>
   `);
+}
+function toggleAcc(id){
+  const same=state.expandAcc===id;
+  state.expandAcc=same?null:id;
+  document.querySelectorAll('.acard').forEach(c=>{
+    const isTarget=c.dataset.accId===state.expandAcc;
+    c.querySelector('.asub').classList.toggle('op',isTarget);
+    c.querySelector('.chev').classList.toggle('op',isTarget);
+  });
 }
 let accDraft=null;
 function editAcc(id){const a=id?state.accounts.find(x=>x.id===id):null;
@@ -476,8 +552,8 @@ function editAcc(id){const a=id?state.accounts.find(x=>x.id===id):null;
       <strong>${d.id?'口座の編集':'口座の追加'}</strong><button class="save" onclick="saveAcc()">保存</button></div>
     <div class="grp"><div class="card">
       <div class="frow"><label>口座名</label><input type="text" placeholder="A銀行" value="${esc(d.name)}" oninput="accDraft.name=this.value" onfocus="focusFix(this)"></div>
-      <div class="frow"><label>月初残高</label><input type="number" inputmode="numeric" placeholder="0" value="${d.initial}" oninput="accDraft.initial=this.value" onfocus="focusFix(this)"></div>
-    </div><div class="hint">「月初残高」は記録開始時点の残高です。以降は登録した収入・支出で自動計算されます。</div></div>
+      <div class="frow"><label>登録残高</label><input type="text" inputmode="numeric" placeholder="0" value="${d.initial?Number(d.initial).toLocaleString():''}" oninput="accDraft.initial=this.value.replace(/[^0-9]/g,'');this.value=accDraft.initial?Number(accDraft.initial).toLocaleString():''" onfocus="focusFix(this)"></div>
+    </div><div class="hint">「登録残高」は記録開始時点の残高です。以降は登録した収入・支出で自動計算されます。</div></div>
     ${d.id?'<button class="btn-danger" onclick="delAcc(accDraft.id)">この口座を削除</button>':'<div style="height:14px"></div>'}
   `);
 }
@@ -499,8 +575,8 @@ function renderMore(){
     <div class="grp"><div class="cap">データ</div>
       <button class="btn-primary" onclick="exportData()">データを書き出す</button>
       <button class="btn-primary sky" onclick="importPrompt()">データを読み込む</button></div>
-    <div class="hint">書き出したテキスト（またはJSONファイル）を保管しておくと、機種変更や復旧の際に読み込めます。読み込むと現在のデータは置き換わります。</div>
-    <div class="grp"><div class="cap">仕様メモ</div><div class="card pad" style="font-size:12.5px;color:var(--sub);line-height:1.7">
+
+    <div class="grp"><div class="cap">仕様</div><div class="card pad" style="font-size:12.5px;color:var(--sub);line-height:1.7">
       ・日本の祝日に対応（振替休日含む）。海の日等の特例移動年は未対応の場合があります。<br>
       ・データはアプリ内に保存されます。定期的な書き出しを推奨します。</div></div>
     <div style="height:16px"></div>
@@ -562,7 +638,7 @@ let tT;function toast(t){const e=document.getElementById('toast');e.textContent=
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 /* ---------- init ---------- */
-(async function(){const n=new Date();state.y=n.getFullYear();state.m=n.getMonth();await load();render();})();
+(async function(){const n=new Date();state.y=n.getFullYear();state.m=n.getMonth();await load();render();scrollToToday();})();
 </script>
 </body>
 </html>
